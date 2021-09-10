@@ -36,3 +36,7 @@ logs/
 src/main/resources/static/export/
 src/main/resources/static/import/
 src/main/resources/static/upload/
+
+*.bat
+*.cmd
+*.sh
