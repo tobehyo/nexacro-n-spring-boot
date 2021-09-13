@@ -29,6 +29,7 @@ import com.nexacro.java.xapi.tx.PlatformType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,8 +46,8 @@ public class NexacroFileUploadDownloadControl {
     private static final String CHAR_SET = "UTF-8";
 
 
-    private String getFilePath(String userFolder) {
-        String realPath = new File("src/main/resources/static").getAbsolutePath();
+    private String getFilePath(String userFolder) throws IOException {        
+        String realPath = new ClassPathResource("static").getFile().getAbsolutePath();
         String uploadPath =  realPath + SP + PATH + SP + userFolder;
         log.debug(uploadPath);
         File extFolder = new File(uploadPath);
@@ -93,7 +94,12 @@ public class NexacroFileUploadDownloadControl {
 
         String userFileFolder = inVariableList.getString("filefolder");
         String uploadPath = getFilePath(userFileFolder);
+        String http = request.getHeader("X-Forwarded-Proto");                
+        String host = request.getHeader("Host");                
         String url = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/services")) + "/" + PATH + "/" +userFileFolder + "/";
+        if(http != null && host != null) {
+            url = http + "://" + host + request.getRequestURL().substring(request.getRequestURL().lastIndexOf("/services"), request.getRequestURL().lastIndexOf("/services")) + "/" + PATH + "/" +userFileFolder + "/";
+        }
 
         List<File> fileList = new ArrayList<>();
         File directory = new File(uploadPath);
@@ -165,7 +171,12 @@ public class NexacroFileUploadDownloadControl {
                 }
                 File destination = new File(filePath + SP + fileName);
                 multipartFile.transferTo(destination);
+                String http = request.getHeader("X-Forwarded-Proto");                
+                String host = request.getHeader("Host");                
                 String url = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/services")) + "/" + PATH + "/" +userFileFolder + "/";
+                if(http != null && host != null) {
+                    url = http + "://" + host + request.getRequestURL().substring(request.getRequestURL().lastIndexOf("/services"), request.getRequestURL().lastIndexOf("/services")) + "/" + PATH + "/" +userFileFolder + "/";
+                }
                 row = ds.newRow(0);
                 ds.set(row, "fileName", fileName);
                 ds.set(row, "fileSize", destination.length());

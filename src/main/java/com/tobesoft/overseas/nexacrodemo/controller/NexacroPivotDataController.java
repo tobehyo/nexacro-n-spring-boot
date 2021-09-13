@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +19,7 @@ import com.nexacro.java.xapi.tx.PlatformRequest;
 import com.nexacro.java.xapi.tx.PlatformResponse;
 import com.nexacro.java.xapi.tx.PlatformType;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,8 +70,8 @@ public class NexacroPivotDataController {
             }
 
             int nRow;
-            String path = new File("src/main/resources/dat/test" + rowCount + ".dat").getAbsolutePath();
-            BufferedReader br = new BufferedReader(new FileReader(path));
+            File file = new ClassPathResource("dat/test" + rowCount + ".dat").getFile();
+            BufferedReader br = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8));
 
             String line;
             char a = (char) 0x1e;
